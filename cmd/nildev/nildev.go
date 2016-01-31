@@ -184,36 +184,39 @@ func main() {
 				}
 			},
 		},
-		{
-			// go run nildev.go run --env dev github.com/nildev/echo
-			Name:  "run",
-			Usage: "run service localy",
-			Flags: []cli.Flag{
-				cli.StringFlag{
-					Name:  "variables, v",
-					Value: "",
-					Usage: "file with variables to be passed as env variables to your service container",
-				},
-				cli.StringFlag{
-					Name:  "env",
-					Value: "",
-					Usage: "env indicates which docker-compose from project should be launched, for example docker-compose-${env}.yml",
-				},
-				cli.StringFlag{
-					Name:  "registry",
-					Value: "",
-					Usage: "registry used to fetch image from, for example quay.io. By default docker hub registry is used, which equals to empty string",
-				},
-			},
-			Action: func(c *cli.Context) {
-				log.Infof("%s", c.String("v"))
-				log.Infof("%s", c.String("dcf"))
-				log.Infof("%s", c.String("registry"))
-
-				// if docker-compose found, run it
-				// docker run -d -p "8080:8080" -e "ND_BITBUCKET_CLIENT_ID=xxxx" -e "ND_BITBUCKET_SECRETE=xxx" -e "ND_DATABASE_NAME=nildev" -e "ND_MONGODB_URL=mongodb://192.168.99.100:27017/nildev" blackhole/account:latest
-			},
-		},
+//		{
+//			// go run nildev.go run --env dev github.com/nildev/echo
+//			Name:  "run",
+//			Usage: "run service localy",
+//			Flags: []cli.Flag{
+//				cli.StringFlag{
+//					Name:  "variables, v",
+//					Value: "",
+//					Usage: "file with variables to be passed as env variables to your service container",
+//				},
+//				cli.StringFlag{
+//					Name:  "env",
+//					Value: "",
+//					Usage: "env indicates which docker-compose from project should be launched, for example docker-compose-${env}.yml",
+//				},
+//				cli.StringFlag{
+//					Name:  "registry",
+//					Value: "",
+//					Usage: "registry used to fetch image from, for example quay.io. By default docker hub registry is used, which equals to empty string",
+//				},
+//			},
+//			Action: func(c *cli.Context) {
+//				log.Infof("%s", c.String("v"))
+//				log.Infof("%s", c.String("dcf"))
+//				log.Infof("%s", c.String("registry"))
+//
+//				// generate docker-compose.yml
+//				// create network
+//				// run
+//				// if docker-compose found, run it
+//				// docker run -d -p "8080:8080" -e "ND_BITBUCKET_CLIENT_ID=xxxx" -e "ND_BITBUCKET_SECRETE=xxx" -e "ND_DATABASE_NAME=nildev" -e "ND_MONGODB_URL=mongodb://192.168.99.100:27017/nildev" blackhole/account:latest
+//			},
+//		},
 		{
 			// go run nildev.go deploy --v file.json github.com/nildev/echo
 			Name:  "deploy",
