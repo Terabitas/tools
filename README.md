@@ -8,7 +8,13 @@ Tools for nildev.io platform.
  
 # `nildev`
 
-Tool that will aid you during development and interracting with nildev.io platform.
+Tool that will aid you during development phase and while interacting with *nildev.io* platform.
+
+## Install
+
+```
+go get github.com/nildev/tools/cmd/nildev
+```
 
 ## Project Details
 

@@ -10,14 +10,20 @@ import (
 	"github.com/nildev/tools/Godeps/_workspace/src/github.com/codeskyblue/go-sh"
 	"github.com/nildev/tools/Godeps/_workspace/src/github.com/nildev/lib/log"
 	"github.com/nildev/tools/Godeps/_workspace/src/github.com/nildev/project/setup"
-	"github.com/nildev/tools/cmd/nildev/auth"
 	"github.com/nildev/tools/cmd/nildev/inout"
 	"github.com/nildev/tools/cmd/nildev/routes"
+	"github.com/nildev/tools/cmd/nildev/services"
 	"github.com/nildev/tools/cmd/nildev/state"
+)
+
+const (
+	DefaultBuildDir = "./build"
 )
 
 func main() {
 	var ndState state.State
+	var buildDir string
+	var env string
 
 	app := cli.NewApp()
 	app.Name = "nildev"
@@ -30,46 +36,120 @@ func main() {
 			Value: 1,
 			Usage: "logging level",
 		},
+		cli.StringFlag{
+			Name:        "buildDir",
+			Value:       "",
+			Usage:       "path to secrets file",
+			Destination: &buildDir,
+		},
+		cli.StringFlag{
+			Name:        "env",
+			Value:       "dev",
+			Usage:       "environment for deployment",
+			Destination: &env,
+		},
 	}
 	app.Before = func(c *cli.Context) error {
 		ndState = state.Load()
+		if buildDir == "" {
+			buildDir = DefaultBuildDir
+		}
 		// setup logging here
 		return nil
 	}
 
 	app.Commands = []cli.Command{
 		{
-			// go run nildev.go auth --provider=bitbucket.org
-			Name:  "auth",
-			Usage: "authenticate yourself by using one of supported providers: bitbucket|github",
-			Flags: []cli.Flag{
-				cli.StringFlag{
-					Name:  "provider",
-					Value: "bitbucket.org",
-					Usage: "provider: bitbucket.org",
+			Name:   "services",
+			Usage:  "manage service on nildev.io",
+			Action: func(c *cli.Context) {},
+			Subcommands: []cli.Command{
+				{
+					// go run nildev.go services run --secrets secrets.json --env env.json --services services.json
+					Name:  "run",
+					Usage: "manage service on nildev.io. As argument spcific servie names can be passed to be launched from service.json",
+					Flags: []cli.Flag{
+						cli.StringFlag{
+							Name:  "secrets",
+							Value: "secrets.json",
+							Usage: "path to secrets file",
+						},
+						cli.StringFlag{
+							Name:  "env",
+							Value: "env.json",
+							Usage: "path to env file",
+						},
+						cli.StringFlag{
+							Name:  "services",
+							Value: "services.json",
+							Usage: "path to services file",
+						},
+						cli.StringFlag{
+							Name:  "platform",
+							Value: "kubernetes",
+							Usage: "platform to be used, avail options: kubernetes",
+						},
+					},
+					Action: func(c *cli.Context) {
+						pathToServicesFile := c.String("services")
+						pathToSecretsFile := c.String("secrets")
+						pathToEnvFile := c.String("env")
+						platform := c.String("platform")
+
+						plt, err := services.MakePlatform(platform, buildDir, env, pathToServicesFile, pathToSecretsFile, pathToEnvFile)
+						if err != nil {
+							log.Fatalf("Could not setup services, [%s]", err)
+						}
+
+						names := []services.Name{}
+						for _, name := range c.Args() {
+							names = append(names, services.Name(name))
+						}
+
+						err = plt.Setup(names...)
+						if err != nil {
+							log.Fatalf("Could not setup services, [%s]", err)
+						}
+						err = plt.Run(names...)
+						if err != nil {
+							log.Fatalf("Could not run services, [%s]", err)
+						}
+					},
 				},
 			},
-			Action: func(c *cli.Context) {
-				ndState.Token = string(auth.Auth(c.String("provider")))
-				ndState.Provider = c.String("provider")
-
-				state.Persist(ndState)
-			},
 		},
+		//		{
+		//			// go run nildev.go auth --provider=bitbucket.org
+		//			Name:  "auth",
+		//			Usage: "authenticate yourself by using one of supported providers: bitbucket|github",
+		//			Flags: []cli.Flag{
+		//				cli.StringFlag{
+		//					Name:  "provider",
+		//					Value: "bitbucket.org",
+		//					Usage: "provider: bitbucket.org",
+		//				},
+		//			},
+		//			Action: func(c *cli.Context) {
+		//				ndState.Token = string(auth.Auth(c.String("provider")))
+		//				ndState.Provider = c.String("provider")
+		//
+		//				state.Persist(ndState)
+		//			},
+		//		},
 		{
 			// go run nildev.go create --config config.json github.com/nildev/echo
 			Name:  "create",
-			Usage: "create new project in $GOPATH/src/ based on selected template",
+			Usage: "create new project in $GOPATH/src/ based on selected template.\nFirst argument should be path to project, for example github.com/your_username/project",
 			Flags: []cli.Flag{
 				cli.StringFlag{
 					Name:  "template",
 					Value: "git@github.com:nildev/prj-tpl-basic-api.git",
-					Usage: "path to project template",
+					Usage: "git repository to be used as template. If it is private repo make sure you have key added: ssh-add ~/.ssh/your_key",
 				},
 				cli.StringFlag{
 					Name:  "config",
 					Value: "config.json",
-					Usage: "path to json file with values to be used while rendering project template",
+					Usage: "path to json file with values that will replace variables in project template",
 				},
 			},
 			Action: func(c *cli.Context) {
@@ -184,39 +264,39 @@ func main() {
 				}
 			},
 		},
-//		{
-//			// go run nildev.go run --env dev github.com/nildev/echo
-//			Name:  "run",
-//			Usage: "run service localy",
-//			Flags: []cli.Flag{
-//				cli.StringFlag{
-//					Name:  "variables, v",
-//					Value: "",
-//					Usage: "file with variables to be passed as env variables to your service container",
-//				},
-//				cli.StringFlag{
-//					Name:  "env",
-//					Value: "",
-//					Usage: "env indicates which docker-compose from project should be launched, for example docker-compose-${env}.yml",
-//				},
-//				cli.StringFlag{
-//					Name:  "registry",
-//					Value: "",
-//					Usage: "registry used to fetch image from, for example quay.io. By default docker hub registry is used, which equals to empty string",
-//				},
-//			},
-//			Action: func(c *cli.Context) {
-//				log.Infof("%s", c.String("v"))
-//				log.Infof("%s", c.String("dcf"))
-//				log.Infof("%s", c.String("registry"))
-//
-//				// generate docker-compose.yml
-//				// create network
-//				// run
-//				// if docker-compose found, run it
-//				// docker run -d -p "8080:8080" -e "ND_BITBUCKET_CLIENT_ID=xxxx" -e "ND_BITBUCKET_SECRETE=xxx" -e "ND_DATABASE_NAME=nildev" -e "ND_MONGODB_URL=mongodb://192.168.99.100:27017/nildev" blackhole/account:latest
-//			},
-//		},
+		//		{
+		//			// go run nildev.go run --env dev github.com/nildev/echo
+		//			Name:  "run",
+		//			Usage: "run service localy",
+		//			Flags: []cli.Flag{
+		//				cli.StringFlag{
+		//					Name:  "variables, v",
+		//					Value: "",
+		//					Usage: "file with variables to be passed as env variables to your service container",
+		//				},
+		//				cli.StringFlag{
+		//					Name:  "env",
+		//					Value: "",
+		//					Usage: "env indicates which docker-compose from project should be launched, for example docker-compose-${env}.yml",
+		//				},
+		//				cli.StringFlag{
+		//					Name:  "registry",
+		//					Value: "",
+		//					Usage: "registry used to fetch image from, for example quay.io. By default docker hub registry is used, which equals to empty string",
+		//				},
+		//			},
+		//			Action: func(c *cli.Context) {
+		//				log.Infof("%s", c.String("v"))
+		//				log.Infof("%s", c.String("dcf"))
+		//				log.Infof("%s", c.String("registry"))
+		//
+		//				// generate docker-compose.yml
+		//				// create network
+		//				// run
+		//				// if docker-compose found, run it
+		//				// docker run -d -p "8080:8080" -e "ND_BITBUCKET_CLIENT_ID=xxxx" -e "ND_BITBUCKET_SECRETE=xxx" -e "ND_DATABASE_NAME=nildev" -e "ND_MONGODB_URL=mongodb://192.168.99.100:27017/nildev" blackhole/account:latest
+		//			},
+		//		},
 		{
 			// go run nildev.go deploy --v file.json github.com/nildev/echo
 			Name:  "deploy",
@@ -242,9 +322,9 @@ func main() {
 		},
 		{
 			// go run nildev.go io --sourceDir=$GOPATH/src/bitbucket.org/nildev/ping
-			Name:  "inout",
+			Name:    "inout",
 			Aliases: []string{"io"},
-			Usage: "generate *inout service* integration code required for nildev service container",
+			Usage:   "generate *inout service* integration code required for nildev service container",
 			Flags: []cli.Flag{
 				cli.StringFlag{
 					Name:  "sourceDir",
@@ -274,9 +354,9 @@ func main() {
 		},
 		{
 			// go run nildev.go r --services=bitbucket.org/nildev/ping --containerDir=$GOPATH/src/bitbucket.org/nildev/blackhole
-			Name:  "routes",
+			Name:    "routes",
 			Aliases: []string{"r"},
-			Usage: "generate routes for given services",
+			Usage:   "generate routes for given services",
 			Flags: []cli.Flag{
 				cli.StringFlag{
 					Name:  "services",
