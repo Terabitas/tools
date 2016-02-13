@@ -3,7 +3,7 @@ package services
 import (
 	"testing"
 
-	. "gopkg.in/check.v1"
+	. "github.com/nildev/tools/Godeps/_workspace/src/gopkg.in/check.v1"
 )
 
 // Run all test suites

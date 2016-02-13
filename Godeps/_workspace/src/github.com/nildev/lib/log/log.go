@@ -35,7 +35,7 @@ type Logger interface {
 }
 
 var (
-	logger = &loggerProxy{logrus.StandardLogger()}
+	logger = &loggerProxy{logrus.New()}
 )
 
 // StandardLogger returns default logger

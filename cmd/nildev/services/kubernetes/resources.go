@@ -5,9 +5,9 @@ import (
 
 	"path/filepath"
 
-	"github.com/nildev/lib/codegen"
-	"github.com/nildev/lib/log"
-	"github.com/nildev/lib/utils"
+	"github.com/nildev/tools/Godeps/_workspace/src/github.com/nildev/lib/codegen"
+	"github.com/nildev/tools/Godeps/_workspace/src/github.com/nildev/lib/log"
+	"github.com/nildev/tools/Godeps/_workspace/src/github.com/nildev/lib/utils"
 )
 
 type (

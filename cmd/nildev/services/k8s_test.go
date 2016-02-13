@@ -6,7 +6,7 @@ import (
 
 	"io/ioutil"
 
-	. "gopkg.in/check.v1"
+	. "github.com/nildev/tools/Godeps/_workspace/src/gopkg.in/check.v1"
 )
 
 type K8sSuite struct{}

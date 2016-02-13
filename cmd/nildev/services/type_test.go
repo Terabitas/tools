@@ -1,6 +1,6 @@
 package services
 
-import . "gopkg.in/check.v1"
+import . "github.com/nildev/tools/Godeps/_workspace/src/gopkg.in/check.v1"
 
 type TypeSuite struct{}
 

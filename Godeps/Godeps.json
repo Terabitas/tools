@@ -35,15 +35,15 @@
 		},
 		{
 			"ImportPath": "github.com/nildev/lib/codegen",
-			"Rev": "e0e044d8fb76d1f0a15be17d6e7b2f6c84ad476d"
+			"Rev": "8ed0c988abca8c3932952aa7c7c1fd16f1eeb881"
 		},
 		{
 			"ImportPath": "github.com/nildev/lib/log",
-			"Rev": "e0e044d8fb76d1f0a15be17d6e7b2f6c84ad476d"
+			"Rev": "8ed0c988abca8c3932952aa7c7c1fd16f1eeb881"
 		},
 		{
 			"ImportPath": "github.com/nildev/lib/utils",
-			"Rev": "e0e044d8fb76d1f0a15be17d6e7b2f6c84ad476d"
+			"Rev": "8ed0c988abca8c3932952aa7c7c1fd16f1eeb881"
 		},
 		{
 			"ImportPath": "github.com/nildev/project/setup",
@@ -57,6 +57,10 @@
 		{
 			"ImportPath": "golang.org/x/sys/unix",
 			"Rev": "eb2c74142fd19a79b3f237334c7384d5167b1b46"
+		},
+		{
+			"ImportPath": "gopkg.in/check.v1",
+			"Rev": "4f90aeace3a26ad7021961c297b22c42160c7b25"
 		}
 	]
 }
