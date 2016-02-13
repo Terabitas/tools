@@ -90,17 +90,17 @@ func MakeKubernetesPlatform(buildDir, env, pathToServicesFile, pathToSecretsFile
 }
 
 func genSecretFileName(basePath, serviceName, secretName string) string {
-	outputPath := basePath + string(filepath.Separator) + serviceName + "-" + secretName + ".json"
+	outputPath := basePath + string(filepath.Separator) + "0-" + serviceName + "-" + secretName + ".json"
 	return outputPath
 }
 
 func genRCFileName(basePath, serviceName string) string {
-	outputPath := basePath + string(filepath.Separator) + serviceName + "-controller" + ".json"
+	outputPath := basePath + string(filepath.Separator) + "2-" + serviceName + "-controller" + ".json"
 	return outputPath
 }
 
 func genServiceFileName(basePath, serviceName string) string {
-	outputPath := basePath + string(filepath.Separator) + serviceName + "-service" + ".json"
+	outputPath := basePath + string(filepath.Separator) + "1-" + serviceName + "-service" + ".json"
 	return outputPath
 }
 
@@ -195,15 +195,31 @@ func (k8s *KubernetesPlatform) Run(serviceNames ...Name) error {
 
 	s := sh.NewSession()
 	//s.ShowCMD = true
-
-	params := []string{
-		"create",
+	paramsD := []string{
+		"delete",
 		"-f",
-		"--net=host",
+		k8s.BuildDir + string(filepath.Separator),
 	}
 
-	s = s.Command("kubectl", params)
+	s = s.Command("kubectl", paramsD)
 	out, err := s.Output()
+
+	if err != nil {
+		log.Fatalf("----\n %s\n\n", err)
+	}
+
+	if len(out) > 0 {
+		log.Infof("----\n %s\n\n", out)
+	}
+
+	paramsC := []string{
+		"create",
+		"-f",
+		k8s.BuildDir + string(filepath.Separator),
+	}
+
+	s = s.Command("kubectl", paramsC)
+	out, err = s.Output()
 
 	if err != nil {
 		log.Fatalf("----\n %s\n\n", err)
