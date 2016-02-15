@@ -27,6 +27,7 @@ type (
 	Service struct {
 		Name      Name     `json:"name"`
 		Project   string   `json:"project"`
+		Source    string   `json:"source"`
 		Image     string   `json:"image"`
 		IsPublic  bool     `json:"isPublic"`
 		Subscribe []Name   `json:"subscribe"`

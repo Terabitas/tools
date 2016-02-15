@@ -3,12 +3,17 @@ package codegen
 import (
 	"fmt"
 	"go/ast"
+	"regexp"
 	"strings"
 )
 
 const (
 	PREFIX_INPUT  = "Input"
 	PREFIX_OUTPUT = "Output"
+
+	TokenMethod = "@method (.*)"
+
+	MethodPOST = "POST"
 )
 
 func ParsePackage(comments []*ast.CommentGroup) *string {
@@ -32,6 +37,7 @@ func ParsePackage(comments []*ast.CommentGroup) *string {
 }
 
 func MakeFunc(fn *ast.FuncDecl, imps []*ast.ImportSpec, comments []*ast.CommentGroup) *Func {
+	method := MethodPOST
 	if len(comments) == 0 {
 		return nil
 	}
@@ -48,9 +54,21 @@ func MakeFunc(fn *ast.FuncDecl, imps []*ast.ImportSpec, comments []*ast.CommentG
 
 	packagePath := strings.Trim(strings.TrimLeft(impStmt, "// import"), "\"")
 
+	if len(fn.Doc.List) > 0 {
+		for i := 0; i < len(fn.Doc.List); i++ {
+			res, rez := parseComment(TokenMethod, fn.Doc.List[i].Text)
+			if rez {
+				parts := strings.Split(res[0], " ")
+				if len(parts) == 2 {
+					method = parts[1]
+				}
+			}
+		}
+	}
+
 	f := &Func{
 		PkgPath: packagePath,
-		Method:  "POST",
+		Method:  method,
 		Pattern: fn.Name.Name,
 		Name:    fn.Name.Name,
 	}
@@ -184,4 +202,21 @@ func makeArrayType(a *ast.ArrayType) string {
 		l = fmt.Sprintf("%s", a.Len)
 	}
 	return fmt.Sprintf("[%s]%s", l, makeFieldType(a.Elt))
+}
+
+func parseComment(pattern string, comment string) ([]string, bool) {
+	result := []string{}
+	tpl, err := regexp.Compile(pattern)
+
+	if err != nil {
+		return []string{}, false
+	}
+
+	if tpl.MatchString(comment) {
+		result = tpl.FindStringSubmatch(comment)
+
+		return result, true
+	}
+
+	return result, false
 }

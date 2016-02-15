@@ -12,7 +12,6 @@ import (
 	"github.com/nildev/tools/Godeps/_workspace/src/github.com/nildev/project/setup"
 	"github.com/nildev/tools/cmd/nildev/inout"
 	"github.com/nildev/tools/cmd/nildev/routes"
-	"github.com/nildev/tools/cmd/nildev/services"
 	"github.com/nildev/tools/cmd/nildev/state"
 )
 
@@ -59,65 +58,125 @@ func main() {
 	}
 
 	app.Commands = []cli.Command{
-		{
-			Name:   "services",
-			Usage:  "manage service on nildev.io",
-			Action: func(c *cli.Context) {},
-			Subcommands: []cli.Command{
-				{
-					// go run nildev.go services run --secrets secrets.json --env env.json --services services.json
-					Name:  "run",
-					Usage: "manage service on nildev.io. As argument spcific servie names can be passed to be launched from service.json",
-					Flags: []cli.Flag{
-						cli.StringFlag{
-							Name:  "secrets",
-							Value: "secrets.json",
-							Usage: "path to secrets file",
-						},
-						cli.StringFlag{
-							Name:  "env",
-							Value: "env.json",
-							Usage: "path to env file",
-						},
-						cli.StringFlag{
-							Name:  "services",
-							Value: "services.json",
-							Usage: "path to services file",
-						},
-						cli.StringFlag{
-							Name:  "platform",
-							Value: "kubernetes",
-							Usage: "platform to be used, avail options: kubernetes",
-						},
-					},
-					Action: func(c *cli.Context) {
-						pathToServicesFile := c.String("services")
-						pathToSecretsFile := c.String("secrets")
-						pathToEnvFile := c.String("env")
-						platform := c.String("platform")
-
-						plt, err := services.MakePlatform(platform, buildDir, env, pathToServicesFile, pathToSecretsFile, pathToEnvFile)
-						if err != nil {
-							log.Fatalf("Could not setup services, [%s]", err)
-						}
-
-						names := []services.Name{}
-						for _, name := range c.Args() {
-							names = append(names, services.Name(name))
-						}
-
-						err = plt.Setup(names...)
-						if err != nil {
-							log.Fatalf("Could not setup services, [%s]", err)
-						}
-						err = plt.Run(names...)
-						if err != nil {
-							log.Fatalf("Could not run services, [%s]", err)
-						}
-					},
-				},
-			},
-		},
+		//		{
+		//			Name:   "services",
+		//			Usage:  "manage service on nildev.io",
+		//			Action: func(c *cli.Context) {},
+		//			Subcommands: []cli.Command{
+		////				{
+		////					// go run nildev.go services search *account*
+		////					Name:  "search",
+		////					Usage: "search for required service",
+		////					Flags: []cli.Flag{},
+		////					Action: func(c *cli.Context) {
+		////						// look up in nildev.services registry if we have it
+		////					},
+		////				},
+		//				//				{
+		//				//					// go run nildev.go services run github.com/nildev/account ...
+		//				//					Name:  "run",
+		//				//					Usage: "setup and run services",
+		//				//					Flags: []cli.Flag{
+		//				//						cli.StringFlag{
+		//				//							Name:  "machine",
+		//				//							Value: "",
+		//				//							Usage: "docker-machine name to be used to run service",
+		//				//						},
+		//				//					},
+		//				//					Action: func(c *cli.Context) {
+		//				//						//						machineName := c.String("machine")
+		//				//						//
+		//				//						//						plt, err := services.MakeDockerComposePlatform(buildDir, env, machineName)
+		//				//						//						if err != nil {
+		//				//						//							log.Fatalf("Could not setup services, [%s]", err)
+		//				//						//						}
+		//				//						//
+		//				//						//						names := []services.Name{}
+		//				//						//						for _, name := range c.Args() {
+		//				//						//							names = append(names, services.Name(name))
+		//				//						//						}
+		//				//						//
+		//				//						//						err = plt.(services.Platform).Setup(names...)
+		//				//						//						if err != nil {
+		//				//						//							log.Fatalf("Could not setup services, [%s]", err)
+		//				//						//						}
+		//				//						//						err = plt.(services.Platform).Run(names...)
+		//				//						//						if err != nil {
+		//				//						//							log.Fatalf("Could not run services, [%s]", err)
+		//				//						//						}
+		//				//					},
+		//				//				},
+		//				//				{
+		//				//					// go run nildev.go services remove github.com/nildev/account ...
+		//				//					Name:  "remove",
+		//				//					Usage: "remove services",
+		//				//					Flags: []cli.Flag{},
+		//				//				Action: func(c *cli.Context) {
+		//				//					// remove whole service
+		//				//				},
+		//			},
+		//			{
+		//				// go run nildev.go services register github.com/your_org/your_service
+		//				Name:  "register",
+		//				Usage: "register your service to nildev.service registry",
+		//				Flags: []cli.Flag{},
+		//				Action: func(c *cli.Context) {
+		//					// register manually your service
+		//				},
+		//			},
+		//			{
+		//				// go run nildev.go services deploy --secrets secrets.json --env env.json --services services.json
+		//				Name:  "deploy",
+		//				Usage: "manage service on nildev.io. As argument spcific servie names can be passed to be launched from service.json",
+		//				Flags: []cli.Flag{
+		//					cli.StringFlag{
+		//						Name:  "secrets",
+		//						Value: "secrets.json",
+		//						Usage: "path to secrets file",
+		//					},
+		//					cli.StringFlag{
+		//						Name:  "env",
+		//						Value: "env.json",
+		//						Usage: "path to env file",
+		//					},
+		//					cli.StringFlag{
+		//						Name:  "services",
+		//						Value: "services.json",
+		//						Usage: "path to services file",
+		//					},
+		//					cli.StringFlag{
+		//						Name:  "platform",
+		//						Value: "kubernetes",
+		//						Usage: "platform to be used, avail options: kubernetes",
+		//					},
+		//				},
+		//				Action: func(c *cli.Context) {
+		//					pathToServicesFile := c.String("services")
+		//					pathToSecretsFile := c.String("secrets")
+		//					pathToEnvFile := c.String("env")
+		//					platform := c.String("platform")
+		//
+		//					plt, err := services.MakePlatform(platform, buildDir, env, pathToServicesFile, pathToSecretsFile, pathToEnvFile)
+		//					if err != nil {
+		//						log.Fatalf("Could not setup services, [%s]", err)
+		//					}
+		//
+		//					names := []services.Name{}
+		//					for _, name := range c.Args() {
+		//						names = append(names, services.Name(name))
+		//					}
+		//
+		//					err = plt.Setup(names...)
+		//					if err != nil {
+		//						log.Fatalf("Could not setup services, [%s]", err)
+		//					}
+		//					err = plt.Run(names...)
+		//					if err != nil {
+		//						log.Fatalf("Could not run services, [%s]", err)
+		//					}
+		//				},
+		//			},
+		//		},
 		//		{
 		//			// go run nildev.go auth --provider=bitbucket.org
 		//			Name:  "auth",

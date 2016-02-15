@@ -15,7 +15,7 @@ type (
 )
 
 // CheckPrimitive to check primitive types
-// @method POST
+// @method GET
 func CheckPrimitive(
 	msg string,
 	num int,
@@ -31,7 +31,7 @@ func CheckPrimitive(
 }
 
 // CheckNestedMap to check primitive types
-// @method POST
+// @method DELETE
 func CheckNestedMap(
 	mapSS map[string]string,
 	mapSMI map[string]map[string]int,
@@ -48,7 +48,7 @@ func CheckNestedMap(
 }
 
 // CheckVariadicParam to check primitive types
-// @method POST
+// @method PUT
 func CheckVariadicParam(
 	x ...map[sub.MyInterface]int,
 ) {

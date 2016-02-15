@@ -81,7 +81,7 @@ func (f Func) GetMethod() string {
 }
 
 func (f Func) GetPattern() string {
-	return "/" + f.Pattern
+	return "/" + makeDashedFromCamelCase(f.Pattern)
 }
 
 func (f Func) GetHandlerName() string {
@@ -105,7 +105,7 @@ func (fld Field) GetOutVarName() string {
 }
 
 func (s Struct) GetName() string {
-	return s.Name
+	return makeDashedFromCamelCase(s.Name)
 }
 
 func (s Struct) GetFieldsSlice() []Field {
@@ -150,4 +150,9 @@ func makeFirstUpperCase(s string) string {
 	a := []rune(s)
 	a[0] = unicode.ToUpper(a[0])
 	return string(a)
+}
+
+func makeDashedFromCamelCase(in string) string {
+	splitted := camelcase.Split(in)
+	return strings.ToLower(strings.Join(splitted, "-"))
 }

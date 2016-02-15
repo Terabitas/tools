@@ -1,0 +1,136 @@
+package services
+
+import (
+	"io/ioutil"
+	"net/http"
+	"os"
+	"path/filepath"
+
+	"strings"
+
+	"github.com/ghodss/yaml"
+	"github.com/nildev/lib/log"
+)
+
+type (
+	DockerComposePlatform struct {
+		Services   Services
+		BuildDir   string
+		Env        Environment
+		httpClient *http.Client
+	}
+
+	resp struct {
+		Content string `json:"content"`
+	}
+)
+
+// Constants ...
+const (
+	VersionMaster = "master"
+	NetworkName   = "nildev-net"
+
+	DockerComposeConfigFileName = "docker-compose"
+)
+
+// MakeDockerComposePlatform constructor
+func MakeDockerComposePlatform(buildDir, env, machineName string) (*DockerComposePlatform, error) {
+	return nil, nil
+}
+
+func (dcp *DockerComposePlatform) Setup(services ...Name) error {
+
+	return nil
+}
+
+// Run service in kubernetes platform
+func (dcp *DockerComposePlatform) Run(services ...Name) error {
+
+	return nil
+}
+
+func (dcp *DockerComposePlatform) download(s *Service, srcFilename string) ([]byte, error) {
+	//	url := "https://api.github.com/repos/" + s.Project + "/" + s.Name + "/contents/" + srcFilename + "?ref=" + s.Version
+	//
+	//	log.Infof("Fetching %s", url)
+	//
+	//	r, err := dcp.httpClient.Get(url)
+	//	if err != nil {
+	//		return nil, fmt.Errorf("Error while fetching service [%s] at version [%s] with env [%s] config [%s]", s.Name, s.Version, s.Environment, err)
+	//	}
+	//
+	//	if r.StatusCode != 200 {
+	//		return nil, fmt.Errorf("HTTP %d code while trying to fetch [%s] from [%s@%s]", r.StatusCode, srcFilename, s.Name, s.Version)
+	//	}
+	//
+	//	x, err := ioutil.ReadAll(r.Body)
+	//
+	//	if err != nil {
+	//		log.Fatalf("Error while reading body of service [%s] at version [%s] with env [%s] config [%s]", s.Name, s.Version, s.Environment, err)
+	//	}
+	//
+	//	re := &resp{}
+	//
+	//	err = json.Unmarshal(x, re)
+	//	if err != nil {
+	//		log.Fatalf("Error while unmarshaling docker-compose.yml of service [%s] at version [%s] with env [%s] [%s]", s.Name, s.Version, s.Environment, err)
+	//	}
+	//
+	//	data, err := base64.StdEncoding.DecodeString(re.Content)
+	//	if err != nil {
+	//		log.Fatalf("Error while decoding docker-compose.yml of service [%s] at version [%s] with env [%s] [%s]", s.Name, s.Version, s.Environment, err)
+	//	}
+
+	return data, nil
+}
+
+func (dcp *DockerComposePlatform) saveCfg(s *Service, srcFilename string, dstFilename string) error {
+	path := makeWorkDir(dcp.dir, s) + string(filepath.Separator) + dstFilename
+	data, err := g.fetchDockerCompose(s, srcFilename)
+	if err != nil {
+		if exists(path) {
+			// remove docker-compose-data if it's non-existing in current environment
+			if err2 := os.Remove(path); err2 != nil {
+				log.Fatal(err2)
+			}
+		}
+		return err
+	}
+
+	md := dcp.prepareDockerCompose(data, s)
+
+	if err := ioutil.WriteFile(path, md, 0644); err != nil {
+		log.Fatalf("Could not write to file, %s", err)
+	}
+
+	return nil
+}
+
+func (dcp *DockerComposePlatform) prepareDockerCompose(data []byte, s *Service) []byte {
+	var d map[string]interface{}
+	err := yaml.Unmarshal(data, &d)
+	if err != nil {
+		log.Fatalf("%s", err)
+	}
+
+	for _, v := range d {
+		v.(map[interface{}]interface{})["net"] = NetworkName
+		delete(v.(map[interface{}]interface{}), "links")
+	}
+
+	md, err := yaml.Marshal(d)
+	if err != nil {
+		log.Fatalf("Error while marshaling updated docker-compose.yml of [%s] [%s]", s.Name, err)
+	}
+
+	return md
+}
+
+func makeWorkDir(root string, s *Service) string {
+	return root + string(filepath.Separator) + cleanup(s.Name)
+}
+
+func cleanup(str string) string {
+	r := strings.NewReplacer("/", "", ".", "-")
+	return strings.ToLower(r.Replace(str))
+}
