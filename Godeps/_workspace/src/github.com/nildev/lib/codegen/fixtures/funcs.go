@@ -68,3 +68,24 @@ func CheckComplex(
 
 	return rstr1, rstr2, rinteM, rinte, rst, rai
 }
+
+// CheckGetter getter
+// All signature params will have to be passed in query string or path
+// Params which have type of pointer will be optional and wont be included in query
+// If no validation rule is required than you do not need to add to @query it will be taken from signature
+// @method GET
+// @path /my-path/{varOne}/{xxx}/sub-resource/{second:[a-z]+}
+// @query {mineRegex:[A-Z]+} {mineRegex2:[0-9]{4}[a-z]{5}} {mineRegex26:[0-9]{4}[a-z]{5}} {notOptional}
+func CheckGetter(varOne int, xxx string, second string, mineRegex string, mineRegex2 string, mineRegex26 string, notOptional string, optionalParam *string) (rez string) {
+	return rez
+}
+
+// CheckPoster post
+// All signature params will have to be included in POST body
+// Only params from @path and @query will be passed to function from path and query string
+// @method POST
+// @path /my-path/{varOne}/{xxx}/sub-resource/{second:[a-z]+}
+// @query {mineRegex:[A-Z]+} {notOptional}
+func CheckPoster(varOne int, xxx string, second string, mineRegex string, mineRegex2 string, mineRegex26 string, notOptional string, optionalParam *string) (rez string) {
+	return rez
+}

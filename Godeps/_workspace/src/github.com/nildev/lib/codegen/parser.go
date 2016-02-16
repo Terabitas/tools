@@ -5,6 +5,8 @@ import (
 	"go/ast"
 	"regexp"
 	"strings"
+
+	"github.com/nildev/tools/Godeps/_workspace/src/github.com/fatih/camelcase"
 )
 
 const (
@@ -12,8 +14,23 @@ const (
 	PREFIX_OUTPUT = "Output"
 
 	TokenMethod = "@method (.*)"
+	TokenPath   = "@path (.*)"
+	TokenQuery  = "@query (.*)"
+
+	TokenNameMethod = "method"
+	TokenNamePath   = "path"
+	TokenNameQuery  = "query"
 
 	MethodPOST = "POST"
+	MethodGET  = "GET"
+)
+
+var (
+	availableTokens = map[string]string{
+		TokenNameMethod: TokenMethod,
+		TokenNamePath:   TokenPath,
+		TokenNameQuery:  TokenQuery,
+	}
 )
 
 func ParsePackage(comments []*ast.CommentGroup) *string {
@@ -37,7 +54,6 @@ func ParsePackage(comments []*ast.CommentGroup) *string {
 }
 
 func MakeFunc(fn *ast.FuncDecl, imps []*ast.ImportSpec, comments []*ast.CommentGroup) *Func {
-	method := MethodPOST
 	if len(comments) == 0 {
 		return nil
 	}
@@ -54,28 +70,113 @@ func MakeFunc(fn *ast.FuncDecl, imps []*ast.ImportSpec, comments []*ast.CommentG
 
 	packagePath := strings.Trim(strings.TrimLeft(impStmt, "// import"), "\"")
 
-	if len(fn.Doc.List) > 0 {
-		for i := 0; i < len(fn.Doc.List); i++ {
-			res, rez := parseComment(TokenMethod, fn.Doc.List[i].Text)
-			if rez {
-				parts := strings.Split(res[0], " ")
-				if len(parts) == 2 {
-					method = parts[1]
-				}
-			}
-		}
-	}
-
 	f := &Func{
 		PkgPath: packagePath,
-		Method:  method,
-		Pattern: fn.Name.Name,
 		Name:    fn.Name.Name,
 	}
+	fnParsedComments := parseAllComments(fn.Doc.List)
+
+	f.Method = MakeMethod(fn, fnParsedComments)
+	f.Pattern = MakePattern(fn, fnParsedComments)
+	f.Query = MakeQuery(fn, fnParsedComments, f.Method, f.Pattern)
 
 	f.In, f.Out = MakeInputOutputStructs(fn, imps, comments)
 
 	return f
+}
+
+func MakeQuery(fn *ast.FuncDecl, comments map[string][]string, method, path string) []string {
+	query := []string{}
+
+	if v, ok := comments[TokenNameQuery]; ok {
+		if len(v) > 1 {
+			parts := strings.Split(v[1], " ")
+			for _, q := range parts {
+				r, _ := regexp.Compile("{(?P<name>\\w+)(?:\\s*:(?P<validation>.+))?}")
+				matches := r.FindAllStringSubmatch(q, -1)
+				if len(matches) > 0 {
+					val := ""
+					if len(matches[0]) == 3 && matches[0][2] != "" {
+						val = q
+					}
+					query = append(query, matches[0][1], val)
+				}
+
+			}
+		}
+	}
+
+	// Add these only if method is GET
+	if method == MethodGET {
+		// add to query params from function signature which that has no validation rules
+		// and though are not added to @query tag
+		if fn.Type.Params != nil {
+			for _, f := range fn.Type.Params.List {
+
+				// check if param from signature is not in path
+				r, _ := regexp.Compile("{(?P<name>\\w+)(?:\\s*:(?P<validation>[^/]+))?}")
+				matches := r.FindAllStringSubmatch(path, -1)
+				found := false
+				for _, m := range matches {
+					// m [{xxx:[a-z]{4}} xxx [a-z]{4}]
+					// m [{xxx} xxx]
+					if len(m) > 1 {
+						if m[1] == f.Names[0].Name {
+							found = true
+							break
+						}
+					}
+				}
+
+				if found {
+					continue
+				}
+
+				// If it has been added while adding from @query - skip it
+				// f.Names[0].Name here is `xxx` func MyF(xxx string)
+				if stringInSlice(f.Names[0].Name, query) {
+					continue
+				}
+
+				// if param is pointer `func MyFunc(param *string)` then it is optional - do not add it
+				if _, ok := f.Type.(*ast.StarExpr); !ok {
+					// if all checks passed then add it with empty string as value
+					// gorilla will match any string in this case, but in query f.Names[0].Name will have to be
+					// presented
+					query = append(query, f.Names[0].Name, "")
+				}
+
+			}
+		}
+	}
+
+	return query
+}
+
+func MakePattern(fn *ast.FuncDecl, comments map[string][]string) string {
+	path := fn.Name.Name
+
+	if v, ok := comments[TokenNamePath]; ok {
+		if len(v) == 2 {
+			path = v[1]
+		}
+	} else {
+		path = "/" + makeDashedFromCamelCase(path)
+	}
+
+	return path
+}
+
+func MakeMethod(fn *ast.FuncDecl, comments map[string][]string) string {
+	method := MethodPOST
+
+	if v, ok := comments[TokenNameMethod]; ok {
+		if len(v) == 2 {
+			method = v[1]
+		}
+	}
+
+	return method
 }
 
 func MakeInputOutputStructs(fn *ast.FuncDecl, imps []*ast.ImportSpec, comments []*ast.CommentGroup) (*Struct, *Struct) {
@@ -214,9 +315,37 @@ func parseComment(pattern string, comment string) ([]string, bool) {
 
 	if tpl.MatchString(comment) {
 		result = tpl.FindStringSubmatch(comment)
-
 		return result, true
 	}
 
 	return result, false
+}
+
+func parseAllComments(comments []*ast.Comment) map[string][]string {
+	rez := map[string][]string{}
+	if len(comments) > 0 {
+		for i := 0; i < len(comments); i++ {
+			for token, regPattern := range availableTokens {
+				res, rezParse := parseComment(regPattern, comments[i].Text)
+				if rezParse {
+					rez[token] = res
+				}
+			}
+		}
+	}
+	return rez
+}
+
+func makeDashedFromCamelCase(in string) string {
+	splitted := camelcase.Split(in)
+	return strings.ToLower(strings.Join(splitted, "-"))
+}
+
+func stringInSlice(a string, list []string) bool {
+	for _, b := range list {
+		if b == a {
+			return true
+		}
+	}
+	return false
 }

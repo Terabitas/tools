@@ -2,9 +2,6 @@ package inout
 
 import (
 	"fmt"
-	"github.com/nildev/tools/Godeps/_workspace/src/github.com/nildev/lib/codegen"
-	"github.com/nildev/tools/Godeps/_workspace/src/github.com/nildev/lib/log"
-	"github.com/nildev/tools/Godeps/_workspace/src/github.com/nildev/lib/utils"
 	"go/ast"
 	"go/parser"
 	"go/token"
@@ -12,6 +9,10 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/nildev/tools/Godeps/_workspace/src/github.com/nildev/lib/codegen"
+	"github.com/nildev/tools/Godeps/_workspace/src/github.com/nildev/lib/log"
+	"github.com/nildev/tools/Godeps/_workspace/src/github.com/nildev/lib/utils"
 )
 
 type (
@@ -69,6 +70,14 @@ func makeDefaultGenerator(tpl, outputPath, basePattern string) *defaultGenerator
 					Alias: "",
 					Path:  "net/http",
 				},
+				"errors": codegen.Import{
+					Alias: "",
+					Path:  "errors",
+				},
+				"strconv": codegen.Import{
+					Alias: "",
+					Path:  "strconv",
+				},
 				"github.com/nildev/lib/router": codegen.Import{
 					Alias: "",
 					Path:  "github.com/nildev/lib/router",
@@ -76,6 +85,10 @@ func makeDefaultGenerator(tpl, outputPath, basePattern string) *defaultGenerator
 				"github.com/nildev/lib/utils": codegen.Import{
 					Alias: "",
 					Path:  "github.com/nildev/lib/utils",
+				},
+				"github.com/gorilla/mux": codegen.Import{
+					Alias: "",
+					Path:  "github.com/gorilla/mux",
 				},
 			},
 			Funcs: codegen.Funcs{},

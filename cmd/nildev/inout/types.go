@@ -41,9 +41,18 @@ type (
 // {{$f.GetHandlerName}} HTTP request handler
 func {{$f.GetHandlerName}}(rw http.ResponseWriter, r *http.Request) {
 	returnCode := http.StatusOK
+    requestData := mux.Vars(r)
 
 	reqDTO := &{{$f.In.Name}}{}
 	utils.UnmarshalRequest(r, reqDTO)
+
+	// Assign values to DTO
+	{{range $j, $e := $f.In.GetFieldsSlice}}
+	cv{{$e.Name}}, ce{{$e.Name}} := GetVarValue(requestData, "{{$e.Name}}", "{{$e.Type}}")
+	if cv{{$e.Name}} != nil && ce{{$e.Name}} == nil {
+		reqDTO.{{$e.GetVarName}} = cv{{$e.Name}}.({{$e.Type}})
+	}
+	{{end}}
 
 	{{range $j, $e := $f.Out.GetFieldsSlice}}{{if $j}},{{end}} {{$e.GetOutVarName}}{{end}} := {{$f.Name}}({{range $j, $e := $f.In.GetFieldsSlice}}{{if $j}},{{end}}reqDTO.{{$e.GetVarName}}{{end}})
 
@@ -74,10 +83,84 @@ func NildevRoutes() router.Routes {
 		Method:      "{{$f.GetMethod}}",
 		Pattern:     "{{$f.GetPattern}}",
 		HandlerFunc: {{$f.GetHandlerName}},
+		Queries:     []string{
+		    {{range $f.GetQuery}}
+		    "{{.}}",
+		    {{end}}
+		},
 	}
 	{{end}}
 
 	return routes
+}
+
+func GetVarValue(data map[string]string, name, typ string) (interface{}, error) {
+	// if value exists in variables
+	if val, ok := data[name]; ok {
+		switch typ {
+		case "string":
+			return val, nil
+		case "*string":
+			return &val, nil
+		case "*int":
+			i, err := strconv.Atoi(val)
+			return &i, err
+		case "int":
+			i, err := strconv.Atoi(val)
+			return i, err
+		case "int8":
+			i, err := strconv.ParseInt(val, 10, 8)
+			return int8(i), err
+		case "*int8":
+			i, err := strconv.ParseInt(val, 10, 8)
+			icst := int8(i)
+			return &icst, err
+		case "int16":
+			i, err := strconv.ParseInt(val, 10, 16)
+			return int16(i), err
+		case "*int16":
+			i, err := strconv.ParseInt(val, 10, 16)
+			icst := int16(i)
+			return &icst, err
+		case "int32":
+			i, err := strconv.ParseInt(val, 10, 32)
+			return int32(i), err
+		case "*int32":
+			i, err := strconv.ParseInt(val, 10, 32)
+			icst := int32(i)
+			return &icst, err
+		case "int64":
+			i, err := strconv.ParseInt(val, 10, 64)
+			return i, err
+		case "*int64":
+			i, err := strconv.ParseInt(val, 10, 64)
+			return &i, err
+		case "float32":
+			i, err := strconv.ParseFloat(val, 32)
+			return float32(i), err
+		case "*float32":
+			i, err := strconv.ParseFloat(val, 32)
+			icst := float32(i)
+			return &icst, err
+		case "float64":
+			i, err := strconv.ParseFloat(val, 64)
+			return i, err
+		case "*float64":
+			i, err := strconv.ParseFloat(val, 64)
+			icst := float64(i)
+			return &icst, err
+		case "bool":
+			b, err := strconv.ParseBool(val)
+			return b, err
+		case "*bool":
+			b, err := strconv.ParseBool(val)
+			return &b, err
+		default:
+			return nil, errors.New("Value is complext type!Expected only primitives!")
+		}
+	}
+
+	return nil, nil
 }
 `
 )
