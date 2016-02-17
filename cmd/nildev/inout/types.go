@@ -48,8 +48,14 @@ func {{$f.GetHandlerName}}(rw http.ResponseWriter, r *http.Request) {
 
 	// Assign values to DTO
 	{{range $j, $e := $f.In.GetFieldsSlice}}
-	cv{{$e.Name}}, ce{{$e.Name}} := GetVarValue(requestData, "{{$e.Name}}", "{{$e.Type}}")
-	if cv{{$e.Name}} != nil && ce{{$e.Name}} == nil {
+	cv{{$e.Name}}, convErr := GetVarValue(requestData, "{{$e.Name}}", "{{$e.Type}}")
+	if convErr != nil {
+		returnCode = http.StatusInternalServerError
+		utils.Respond(rw, convErr, returnCode)
+		return
+	}
+
+	if cv{{$e.Name}} != nil  {
 		reqDTO.{{$e.GetVarName}} = cv{{$e.Name}}.({{$e.Type}})
 	}
 	{{end}}

@@ -35,15 +35,15 @@
 		},
 		{
 			"ImportPath": "github.com/nildev/lib/codegen",
-			"Rev": "a7453b8686388c6cfe2f7ba777142a2c879f810b"
+			"Rev": "10bc66186c4c87a74959374f6978880d0da56094"
 		},
 		{
 			"ImportPath": "github.com/nildev/lib/log",
-			"Rev": "a7453b8686388c6cfe2f7ba777142a2c879f810b"
+			"Rev": "10bc66186c4c87a74959374f6978880d0da56094"
 		},
 		{
 			"ImportPath": "github.com/nildev/lib/utils",
-			"Rev": "a7453b8686388c6cfe2f7ba777142a2c879f810b"
+			"Rev": "10bc66186c4c87a74959374f6978880d0da56094"
 		},
 		{
 			"ImportPath": "github.com/nildev/project/setup",

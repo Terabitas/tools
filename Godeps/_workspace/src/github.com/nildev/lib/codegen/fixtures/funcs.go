@@ -89,3 +89,8 @@ func CheckGetter(varOne int, xxx string, second string, mineRegex string, mineRe
 func CheckPoster(varOne int, xxx string, second string, mineRegex string, mineRegex2 string, mineRegex26 string, notOptional string, optionalParam *string) (rez string) {
 	return rez
 }
+
+// CheckNone to check primitive types
+func CheckNone(boo string) (rez string) {
+	return rez
+}
