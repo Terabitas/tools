@@ -41,14 +41,25 @@ type (
 // {{$f.GetHandlerName}} HTTP request handler
 func {{$f.GetHandlerName}}(rw http.ResponseWriter, r *http.Request) {
 	returnCode := http.StatusOK
-    requestData := mux.Vars(r)
+
+    {{if $f.In.GetFieldsSlice}}
+    var requestData map[string]string
+    requestData = mux.Vars(r)
+    log.Infof("Request vars [%+v]", requestData)
+    {{end}}
 
 	reqDTO := &{{$f.In.Name}}{}
 	utils.UnmarshalRequest(r, reqDTO)
 
 	// Assign values to DTO
 	{{range $j, $e := $f.In.GetFieldsSlice}}
-	cv{{$e.Name}}, convErr := GetVarValue(requestData, "{{$e.Name}}", "{{$e.Type}}")
+	{{if eq $e.Name "user"}}
+	user := context.Get(r, "user")
+	if user != nil {
+		reqDTO.{{$e.GetVarName}} = registry.User{Data:user.(*jwt.Token).Claims}
+    }
+    {{else}}
+    cv{{$e.Name}}, convErr := GetVarValue(requestData, "{{$e.Name}}", "{{$e.Type}}")
 	if convErr != nil {
 		returnCode = http.StatusInternalServerError
 		utils.Respond(rw, convErr, returnCode)
@@ -58,6 +69,8 @@ func {{$f.GetHandlerName}}(rw http.ResponseWriter, r *http.Request) {
 	if cv{{$e.Name}} != nil  {
 		reqDTO.{{$e.GetVarName}} = cv{{$e.Name}}.({{$e.Type}})
 	}
+	{{end}}
+
 	{{end}}
 
 	{{range $j, $e := $f.Out.GetFieldsSlice}}{{if $j}},{{end}} {{$e.GetOutVarName}}{{end}} := {{$f.Name}}({{range $j, $e := $f.In.GetFieldsSlice}}{{if $j}},{{end}}reqDTO.{{$e.GetVarName}}{{end}})
@@ -88,6 +101,7 @@ func NildevRoutes() router.Routes {
 		Name:        "{{$f.GetFullName}}",
 		Method:      "{{$f.GetMethod}}",
 		Pattern:     "{{$f.GetPattern}}",
+		Protected:   {{$f.GetProtected}},
 		HandlerFunc: {{$f.GetHandlerName}},
 		Queries:     []string{
 		    {{range $f.GetQuery}}

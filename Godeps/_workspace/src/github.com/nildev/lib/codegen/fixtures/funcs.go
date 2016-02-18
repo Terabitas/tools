@@ -91,6 +91,7 @@ func CheckPoster(varOne int, xxx string, second string, mineRegex string, mineRe
 }
 
 // CheckNone to check primitive types
+// @protected
 func CheckNone(boo string) (rez string) {
 	return rez
 }

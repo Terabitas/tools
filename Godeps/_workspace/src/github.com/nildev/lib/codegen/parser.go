@@ -13,13 +13,15 @@ const (
 	PREFIX_INPUT  = "Input"
 	PREFIX_OUTPUT = "Output"
 
-	TokenMethod = "@method (.*)"
-	TokenPath   = "@path (.*)"
-	TokenQuery  = "@query (.*)"
+	TokenMethod    = "@method (.*)"
+	TokenPath      = "@path (.*)"
+	TokenQuery     = "@query (.*)"
+	TokenProtected = "@protected"
 
-	TokenNameMethod = "method"
-	TokenNamePath   = "path"
-	TokenNameQuery  = "query"
+	TokenNameMethod    = "method"
+	TokenNamePath      = "path"
+	TokenNameQuery     = "query"
+	TokenNameProtected = "protected"
 
 	MethodPOST = "POST"
 	MethodGET  = "GET"
@@ -27,9 +29,10 @@ const (
 
 var (
 	availableTokens = map[string]string{
-		TokenNameMethod: TokenMethod,
-		TokenNamePath:   TokenPath,
-		TokenNameQuery:  TokenQuery,
+		TokenNameMethod:    TokenMethod,
+		TokenNamePath:      TokenPath,
+		TokenNameQuery:     TokenQuery,
+		TokenNameProtected: TokenProtected,
 	}
 )
 
@@ -80,6 +83,7 @@ func MakeFunc(fn *ast.FuncDecl, imps []*ast.ImportSpec, comments []*ast.CommentG
 		fnParsedComments = parseAllComments(fn.Doc.List)
 	}
 
+	f.Protected = MakeProtected(fn, fnParsedComments)
 	f.Method = MakeMethod(fn, fnParsedComments)
 	f.Pattern = MakePattern(fn, fnParsedComments)
 	f.Query = MakeQuery(fn, fnParsedComments, f.Method, f.Pattern)
@@ -87,6 +91,18 @@ func MakeFunc(fn *ast.FuncDecl, imps []*ast.ImportSpec, comments []*ast.CommentG
 	f.In, f.Out = MakeInputOutputStructs(fn, imps, comments)
 
 	return f
+}
+
+func MakeProtected(fn *ast.FuncDecl, comments map[string][]string) bool {
+	protected := false
+
+	if v, ok := comments[TokenNameProtected]; ok {
+		if len(v) > 0 {
+			protected = true
+		}
+	}
+
+	return protected
 }
 
 func MakeQuery(fn *ast.FuncDecl, comments map[string][]string, method, path string) []string {

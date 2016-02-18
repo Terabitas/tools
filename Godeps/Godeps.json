@@ -7,8 +7,8 @@
 	"Deps": [
 		{
 			"ImportPath": "github.com/Sirupsen/logrus",
-			"Comment": "v0.8.7-55-gf7f79f7",
-			"Rev": "f7f79f729e0fbe2fcc061db48a9ba0263f588252"
+			"Comment": "v0.6.2-10-g51fe59a",
+			"Rev": "51fe59aca108dc5680109e7b2051cbdcfa5a253c"
 		},
 		{
 			"ImportPath": "github.com/codegangsta/cli",
@@ -35,15 +35,15 @@
 		},
 		{
 			"ImportPath": "github.com/nildev/lib/codegen",
-			"Rev": "10bc66186c4c87a74959374f6978880d0da56094"
+			"Rev": "8d0a5bb997de0956393e903bafd13ec11a052543"
 		},
 		{
 			"ImportPath": "github.com/nildev/lib/log",
-			"Rev": "10bc66186c4c87a74959374f6978880d0da56094"
+			"Rev": "8d0a5bb997de0956393e903bafd13ec11a052543"
 		},
 		{
 			"ImportPath": "github.com/nildev/lib/utils",
-			"Rev": "10bc66186c4c87a74959374f6978880d0da56094"
+			"Rev": "8d0a5bb997de0956393e903bafd13ec11a052543"
 		},
 		{
 			"ImportPath": "github.com/nildev/project/setup",
@@ -53,10 +53,6 @@
 		{
 			"ImportPath": "github.com/skratchdot/open-golang/open",
 			"Rev": "c8748311a7528d0ba7330d302adbc5a677ef9c9e"
-		},
-		{
-			"ImportPath": "golang.org/x/sys/unix",
-			"Rev": "eb2c74142fd19a79b3f237334c7384d5167b1b46"
 		},
 		{
 			"ImportPath": "gopkg.in/check.v1",

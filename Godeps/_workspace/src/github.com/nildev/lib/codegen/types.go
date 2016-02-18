@@ -38,13 +38,14 @@ type (
 	Structs map[string]Struct
 
 	Func struct {
-		PkgPath string
-		Name    string
-		Method  string
-		Pattern string
-		Query   []string
-		In      *Struct
-		Out     *Struct
+		PkgPath   string
+		Name      string
+		Method    string
+		Protected bool
+		Pattern   string
+		Query     []string
+		In        *Struct
+		Out       *Struct
 	}
 
 	Funcs []Func
@@ -94,6 +95,9 @@ func (f Func) GetPattern() string {
 
 func (f Func) GetHandlerName() string {
 	return f.Name + "Handler"
+}
+func (f Func) GetProtected() bool {
+	return f.Protected
 }
 
 func (fld Field) GetVarName() string {

@@ -66,6 +66,10 @@ func makeDefaultGenerator(tpl, outputPath, basePattern string) *defaultGenerator
 		vm: &viewModel{
 			BasePattern: basePattern,
 			Imports: codegen.Imports{
+				"log": codegen.Import{
+					Alias: "",
+					Path:  "log",
+				},
 				"net/http": codegen.Import{
 					Alias: "",
 					Path:  "net/http",
@@ -89,6 +93,14 @@ func makeDefaultGenerator(tpl, outputPath, basePattern string) *defaultGenerator
 				"github.com/gorilla/mux": codegen.Import{
 					Alias: "",
 					Path:  "github.com/gorilla/mux",
+				},
+				"github.com/gorilla/context": codegen.Import{
+					Alias: "",
+					Path:  "github.com/gorilla/context",
+				},
+				"github.com/dgrijalva/jwt-go": codegen.Import{
+					Alias: "",
+					Path:  "github.com/dgrijalva/jwt-go",
 				},
 			},
 			Funcs: codegen.Funcs{},
