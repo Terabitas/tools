@@ -30,6 +30,10 @@
 			"Rev": "332844f2fb0193cce955f4687646abbdcc43ceeb"
 		},
 		{
+			"ImportPath": "github.com/getsentry/raven-go",
+			"Rev": "1cc47a9463b90f246a0503d4c2e9a55c9459ced3"
+		},
+		{
 			"ImportPath": "github.com/juju/errors",
 			"Rev": "b152fd7394724db99a5a4222145d6e4c20e5adff"
 		},
@@ -46,23 +50,17 @@
 			"Rev": "b073484ec1b6d967d5450865be13b148db5c783b"
 		},
 		{
-			"ImportPath": "github.com/nildev/project/Godeps/_workspace/src/github.com/codegangsta/inject",
-			"Comment": "v0.1.0-5-gb26c158",
-			"Rev": "b26c158918a8af42a96c69d4074dc959be2fd5af"
-		},
-		{
-			"ImportPath": "github.com/nildev/project/Godeps/_workspace/src/github.com/codeskyblue/go-sh",
-			"Comment": "v0.1.0-5-gb26c158",
-			"Rev": "b26c158918a8af42a96c69d4074dc959be2fd5af"
-		},
-		{
 			"ImportPath": "github.com/nildev/project/setup",
-			"Comment": "v0.1.0-5-gb26c158",
-			"Rev": "b26c158918a8af42a96c69d4074dc959be2fd5af"
+			"Comment": "v0.1.0-7-g500331b",
+			"Rev": "500331ba76d6a678db1fa7b81006dd59b5eab066"
 		},
 		{
 			"ImportPath": "github.com/skratchdot/open-golang/open",
 			"Rev": "c8748311a7528d0ba7330d302adbc5a677ef9c9e"
+		},
+		{
+			"ImportPath": "github.com/tobi/airbrake-go",
+			"Rev": "a3cdd910a3ffef88a20fbecc10363a520ad61a0a"
 		},
 		{
 			"ImportPath": "gopkg.in/check.v1",

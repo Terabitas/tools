@@ -8,6 +8,9 @@ import (
 	"path/filepath"
 	"sort"
 	"text/template"
+	"strings"
+	"fmt"
+	"regexp"
 )
 
 type (
@@ -84,6 +87,12 @@ func (r *renderer) visit(path string, f os.FileInfo, err error) error {
 	}
 
 	if !f.IsDir() {
+		re, _ := regexp.Compile(".*/vendor/.*")
+		matches := re.FindAllStringSubmatch(path, -1)
+		if len(matches) > 0 {
+			return nil
+		}
+
 		renderFile(newFileName, r.cfg)
 	}
 
@@ -128,6 +137,7 @@ func walkDirs(root string, cfg Config) {
 	}
 
 	for _, name := range dirs {
-		walkDirs(root+string(filepath.Separator)+name, cfg)
+		dname := root+string(filepath.Separator)+name
+		walkDirs(dname, cfg)
 	}
 }

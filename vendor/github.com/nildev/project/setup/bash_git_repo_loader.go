@@ -1,11 +1,10 @@
 package setup
 
 import (
+	"github.com/codeskyblue/go-sh"
 	"log"
 	"os"
 	"path/filepath"
-
-	"github.com/nildev/project/Godeps/_workspace/src/github.com/codeskyblue/go-sh"
 )
 
 type (
