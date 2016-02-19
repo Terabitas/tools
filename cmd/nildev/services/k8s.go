@@ -8,10 +8,10 @@ import (
 
 	"path/filepath"
 
-	"github.com/nildev/tools/Godeps/_workspace/src/github.com/codeskyblue/go-sh"
-	"github.com/nildev/tools/Godeps/_workspace/src/github.com/juju/errors"
-	"github.com/nildev/tools/Godeps/_workspace/src/github.com/nildev/lib/log"
-	"github.com/nildev/tools/Godeps/_workspace/src/github.com/nildev/lib/utils"
+	"github.com/codeskyblue/go-sh"
+	"github.com/juju/errors"
+	"github.com/nildev/lib/log"
+	"github.com/nildev/lib/utils"
 	"github.com/nildev/tools/cmd/nildev/services/kubernetes"
 )
 

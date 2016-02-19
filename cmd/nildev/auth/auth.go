@@ -6,8 +6,8 @@ import (
 
 	"io"
 
-	"github.com/nildev/tools/Godeps/_workspace/src/github.com/nildev/lib/log"
-	"github.com/nildev/tools/Godeps/_workspace/src/github.com/skratchdot/open-golang/open"
+	"github.com/nildev/lib/log"
+	"github.com/skratchdot/open-golang/open"
 )
 
 var wg sync.WaitGroup

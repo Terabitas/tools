@@ -1,6 +1,6 @@
 {
 	"ImportPath": "github.com/nildev/tools",
-	"GoVersion": "go1.5",
+	"GoVersion": "go1.6",
 	"Packages": [
 		"./..."
 	],
@@ -35,15 +35,25 @@
 		},
 		{
 			"ImportPath": "github.com/nildev/lib/codegen",
-			"Rev": "8d0a5bb997de0956393e903bafd13ec11a052543"
+			"Rev": "b073484ec1b6d967d5450865be13b148db5c783b"
 		},
 		{
 			"ImportPath": "github.com/nildev/lib/log",
-			"Rev": "8d0a5bb997de0956393e903bafd13ec11a052543"
+			"Rev": "b073484ec1b6d967d5450865be13b148db5c783b"
 		},
 		{
 			"ImportPath": "github.com/nildev/lib/utils",
-			"Rev": "8d0a5bb997de0956393e903bafd13ec11a052543"
+			"Rev": "b073484ec1b6d967d5450865be13b148db5c783b"
+		},
+		{
+			"ImportPath": "github.com/nildev/project/Godeps/_workspace/src/github.com/codegangsta/inject",
+			"Comment": "v0.1.0-5-gb26c158",
+			"Rev": "b26c158918a8af42a96c69d4074dc959be2fd5af"
+		},
+		{
+			"ImportPath": "github.com/nildev/project/Godeps/_workspace/src/github.com/codeskyblue/go-sh",
+			"Comment": "v0.1.0-5-gb26c158",
+			"Rev": "b26c158918a8af42a96c69d4074dc959be2fd5af"
 		},
 		{
 			"ImportPath": "github.com/nildev/project/setup",

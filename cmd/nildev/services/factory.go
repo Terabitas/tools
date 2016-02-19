@@ -1,6 +1,6 @@
 package services
 
-import "github.com/nildev/tools/Godeps/_workspace/src/github.com/juju/errors"
+import "github.com/juju/errors"
 
 const (
 	PlatformKubernetes    = "kubernetes"

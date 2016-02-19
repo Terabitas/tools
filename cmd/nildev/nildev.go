@@ -6,10 +6,10 @@ import (
 
 	"path/filepath"
 
-	"github.com/nildev/tools/Godeps/_workspace/src/github.com/codegangsta/cli"
-	"github.com/nildev/tools/Godeps/_workspace/src/github.com/codeskyblue/go-sh"
-	"github.com/nildev/tools/Godeps/_workspace/src/github.com/nildev/lib/log"
-	"github.com/nildev/tools/Godeps/_workspace/src/github.com/nildev/project/setup"
+	"github.com/codegangsta/cli"
+	"github.com/codeskyblue/go-sh"
+	"github.com/nildev/lib/log"
+	"github.com/nildev/project/setup"
 	"github.com/nildev/tools/cmd/nildev/inout"
 	"github.com/nildev/tools/cmd/nildev/routes"
 	"github.com/nildev/tools/cmd/nildev/state"
