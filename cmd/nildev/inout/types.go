@@ -45,7 +45,7 @@ func {{$f.GetHandlerName}}(rw http.ResponseWriter, r *http.Request) {
     {{if $f.In.GetFieldsSlice}}
     var requestData map[string]string
     requestData = mux.Vars(r)
-    log.Infof("Request vars [%+v]", requestData)
+    log.Info(requestData)
     {{end}}
 
 	reqDTO := &{{$f.In.Name}}{}
