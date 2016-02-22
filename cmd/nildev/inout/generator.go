@@ -68,7 +68,7 @@ func makeDefaultGenerator(tpl, outputPath, basePattern string) *defaultGenerator
 			Imports: codegen.Imports{
 				"log": codegen.Import{
 					Alias: "",
-					Path:  "log",
+					Path:  "github.com/Sirupsen/logrus",
 				},
 				"net/http": codegen.Import{
 					Alias: "",
