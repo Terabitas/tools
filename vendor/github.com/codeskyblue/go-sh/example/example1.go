@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"log"
+
+	"github.com/codeskyblue/go-sh"
 )
 
 func main() {
