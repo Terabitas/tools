@@ -51,8 +51,8 @@
 		},
 		{
 			"ImportPath": "github.com/nildev/project/setup",
-			"Comment": "v0.1.0-7-g500331b",
-			"Rev": "500331ba76d6a678db1fa7b81006dd59b5eab066"
+			"Comment": "v0.1.0-8-g84567d1",
+			"Rev": "84567d18c7fe0fc45248f9ad3ca938a7f82495db"
 		},
 		{
 			"ImportPath": "github.com/skratchdot/open-golang/open",

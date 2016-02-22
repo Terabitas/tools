@@ -6,11 +6,9 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"regexp"
 	"sort"
 	"text/template"
-	"strings"
-	"fmt"
-	"regexp"
 )
 
 type (
@@ -137,7 +135,8 @@ func walkDirs(root string, cfg Config) {
 	}
 
 	for _, name := range dirs {
-		dname := root+string(filepath.Separator)+name
-		walkDirs(dname, cfg)
+		if name != "vendor" {
+			walkDirs(root+string(filepath.Separator)+name, cfg)
+		}
 	}
 }

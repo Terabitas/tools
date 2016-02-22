@@ -1,7 +1,6 @@
 package setup
 
 import (
-	"github.com/codeskyblue/go-sh"
 	"log"
 	"os"
 	"path/filepath"
