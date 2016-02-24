@@ -81,7 +81,13 @@ func {{$f.GetHandlerName}}(rw http.ResponseWriter, r *http.Request) {
 
     hh := {{$e.GetOutVarName}}
     for k, v := range hh {
-    	rw.Header().Set(k, v)
+    	if len(v) == 1 {
+    	    rw.Header().Set(k, v[0])
+    	} else if len(v) > 1{
+	    for _, vv := range v {
+	        rw.Header().Add(k, vv)
+	    }
+    	}
     }
     {{end}}
 
