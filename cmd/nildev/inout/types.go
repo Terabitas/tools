@@ -20,14 +20,12 @@ import (
 
 type (
 	{{range $i, $f := .Funcs}}
-
 	// {{$f.In.GetName}} struct
 	{{$f.In.GetName}} struct {
 		{{range $j, $e := $f.In.GetFieldsSlice}}
 		{{$e.GetVarName}} {{$e.GetVarType}} {{$e.GetTag}}
 		{{end}}
 	}
-
 	// {{$f.Out.GetName}} struct
 	{{$f.Out.GetName}} struct {
 		{{range $j, $e := $f.Out.GetFieldsSlice}}
@@ -40,7 +38,8 @@ type (
 {{range $i, $f := .Funcs}}
 // {{$f.GetHandlerName}} HTTP request handler
 func {{$f.GetHandlerName}}(rw http.ResponseWriter, r *http.Request) {
-	returnCode := http.StatusOK
+    httpCodeSetByUser := false
+    returnCode := http.StatusOK
 
     {{if $f.In.GetFieldsSlice}}
     var requestData map[string]string
@@ -48,44 +47,68 @@ func {{$f.GetHandlerName}}(rw http.ResponseWriter, r *http.Request) {
     log.Infof("Request data [%+v]",requestData)
     {{end}}
 
-	reqDTO := &{{$f.In.Name}}{}
-	utils.UnmarshalRequest(r, reqDTO)
+    reqDTO := &{{$f.In.Name}}{}
+    utils.UnmarshalRequest(r, reqDTO)
 
-	// Assign values to DTO
-	{{range $j, $e := $f.In.GetFieldsSlice}}
-	{{if eq $e.Name "user"}}
-	user := context.Get(r, "user")
-	if user != nil {
-		reqDTO.{{$e.GetVarName}} = registry.User{Data:user.(*jwt.Token).Claims}
+    {{range $j, $e := $f.In.GetFieldsSlice}}
+    {{if eq $e.Name "user"}}
+
+    user := context.Get(r, "user")
+    if user != nil {
+        reqDTO.{{$e.GetVarName}} = registry.User{Data:user.(*jwt.Token).Claims}
     }
+
     {{else}}
+
     cv{{$e.Name}}, convErr := GetVarValue(requestData, "{{$e.Name}}", "{{$e.Type}}")
-	if convErr != nil {
-		returnCode = http.StatusInternalServerError
-		utils.Respond(rw, convErr, returnCode)
-		return
+    if convErr != nil {
+	returnCode = http.StatusInternalServerError
+	utils.Respond(rw, convErr, returnCode)
+	return
+    }
+
+    if cv{{$e.Name}} != nil  {
+	reqDTO.{{$e.GetVarName}} = cv{{$e.Name}}.({{$e.Type}})
+    }
+
+    {{end}}
+    {{end}}
+
+    {{range $j, $e := $f.Out.GetFieldsSlice}}{{if $j}},{{end}} {{$e.GetOutVarName}}{{end}} := {{$f.Name}}({{range $j, $e := $f.In.GetFieldsSlice}}{{if $j}},{{end}}reqDTO.{{$e.GetVarName}}{{end}})
+
+    {{range $j, $e := $f.Out.GetFieldsSlice}}
+    {{if eq $e.Name "httpHeaders"}}
+
+    hh := {{$e.GetOutVarName}}
+    for k, v := range hh {
+    	rw.Header().Set(k, v)
+    }
+    {{end}}
+
+    {{if eq $e.Name "httpStatus"}}
+    httpCodeSetByUser = true
+    returnCode = {{$e.GetOutVarName}}
+    {{end}}
+
+    {{end}}
+
+    if !httpCodeSetByUser {
+        if err != nil {
+            returnCode = http.StatusInternalServerError
 	}
+    }
 
-	if cv{{$e.Name}} != nil  {
-		reqDTO.{{$e.GetVarName}} = cv{{$e.Name}}.({{$e.Type}})
-	}
-	{{end}}
-
-	{{end}}
-
-	{{range $j, $e := $f.Out.GetFieldsSlice}}{{if $j}},{{end}} {{$e.GetOutVarName}}{{end}} := {{$f.Name}}({{range $j, $e := $f.In.GetFieldsSlice}}{{if $j}},{{end}}reqDTO.{{$e.GetVarName}}{{end}})
-
-	if err != nil {
-		returnCode = http.StatusInternalServerError
-	}
-
-	respDTO := &{{$f.Out.Name}}{
-		{{range $j, $e := $f.Out.GetFieldsSlice}}
-		{{$e.GetVarName}}:{{$e.GetOutVarName}},
+    respDTO := &{{$f.Out.Name}}{
+	{{range $j, $e := $f.Out.GetFieldsSlice}}
+		{{if ne $e.Name "httpHeaders"}}
+			{{if ne $e.Name "httpStatus"}}
+				{{$e.GetVarName}}:{{$e.GetOutVarName}},
+			{{end}}
 		{{end}}
-	}
+	{{end}}
+    }
 
-	utils.Respond(rw, respDTO, returnCode)
+    utils.Respond(rw, respDTO, returnCode)
 }
 {{end}}
 
