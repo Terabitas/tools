@@ -1,0 +1,62 @@
+{
+	"ImportPath": "github.com/nildev/tools/cmd/nildev",
+	"GoVersion": "go1.6",
+	"Packages": [
+		"./..."
+	],
+	"Deps": [
+		{
+			"ImportPath": "github.com/Sirupsen/logrus",
+			"Comment": "v0.6.2-10-g51fe59a",
+			"Rev": "51fe59aca108dc5680109e7b2051cbdcfa5a253c"
+		},
+		{
+			"ImportPath": "github.com/codegangsta/cli",
+			"Comment": "1.2.0-197-gcf1f63a",
+			"Rev": "cf1f63a7274872768d4037305d572b70b1199397"
+		},
+		{
+			"ImportPath": "github.com/codegangsta/inject",
+			"Comment": "v1.0-rc1-10-g33e0aa1",
+			"Rev": "33e0aa1cb7c019ccc3fbe049a8262a6403d30504"
+		},
+		{
+			"ImportPath": "github.com/codeskyblue/go-sh",
+			"Comment": "v0.1-37-g3d593d4",
+			"Rev": "3d593d477915b4d2f2e74b2e041495345647a46b"
+		},
+		{
+			"ImportPath": "github.com/fatih/camelcase",
+			"Rev": "332844f2fb0193cce955f4687646abbdcc43ceeb"
+		},
+		{
+			"ImportPath": "github.com/juju/errors",
+			"Rev": "b152fd7394724db99a5a4222145d6e4c20e5adff"
+		},
+		{
+			"ImportPath": "github.com/nildev/lib/codegen",
+			"Rev": "b6b57a490f66408ff7d6c67178524e7e541ebb20"
+		},
+		{
+			"ImportPath": "github.com/nildev/lib/log",
+			"Rev": "b6b57a490f66408ff7d6c67178524e7e541ebb20"
+		},
+		{
+			"ImportPath": "github.com/nildev/lib/utils",
+			"Rev": "b6b57a490f66408ff7d6c67178524e7e541ebb20"
+		},
+		{
+			"ImportPath": "github.com/nildev/project/setup",
+			"Comment": "v0.1.0-12-g4d2f6a7",
+			"Rev": "4d2f6a75e59d994082650cb7b343b15a58bf0c66"
+		},
+		{
+			"ImportPath": "github.com/skratchdot/open-golang/open",
+			"Rev": "c8748311a7528d0ba7330d302adbc5a677ef9c9e"
+		},
+		{
+			"ImportPath": "gopkg.in/check.v1",
+			"Rev": "4f90aeace3a26ad7021961c297b22c42160c7b25"
+		}
+	]
+}

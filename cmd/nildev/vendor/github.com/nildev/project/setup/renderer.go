@@ -6,9 +6,9 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"regexp"
 	"sort"
 	"text/template"
+	"regexp"
 )
 
 type (
