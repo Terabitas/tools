@@ -260,7 +260,7 @@ func makeFields(fields *ast.FieldList) Fields {
 }
 
 func makeField(field *ast.Field) Field {
-	//	fmt.Printf("[%s] %T \n", field.Names[0].Name, field.Type)
+	//fmt.Printf("[%s] %T \n", field.Names[0].Name, field.Type)
 	f := Field{
 		Name: field.Names[0].Name,
 		Type: makeFieldType(field.Type),
@@ -314,7 +314,7 @@ func makeStructType(strc *ast.StructType) string {
 }
 
 func makePtrType(ptr *ast.StarExpr) string {
-	return fmt.Sprintf("*%s", ptr.X)
+	return fmt.Sprintf("*%s", makeFieldType(ptr.X))
 }
 
 func makeArrayType(a *ast.ArrayType) string {

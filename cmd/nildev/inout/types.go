@@ -55,7 +55,7 @@ func {{$f.GetHandlerName}}(rw http.ResponseWriter, r *http.Request) {
 
     user := context.Get(r, "user")
     if user != nil {
-        reqDTO.{{$e.GetVarName}} = registry.User{Data:user.(*jwt.Token).Claims}
+        reqDTO.{{$e.GetVarName}} = registry.MakeUser(user.(*jwt.Token).Claims)
     }
 
     {{else}}
@@ -205,7 +205,7 @@ func GetVarValue(data map[string]string, name, typ string) (interface{}, error) 
 			b, err := strconv.ParseBool(val)
 			return &b, err
 		default:
-			return nil, errors.New("Value is complext type!Expected only primitives!")
+			return nil, nil
 		}
 	}
 

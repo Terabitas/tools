@@ -59,14 +59,16 @@ func CheckVariadicParam(
 // @method POST
 func CheckComplex(
 	str1 MyStruct,
+	strPtr *MyStruct,
+	strSubPtr *sub.MyStruct,
 	str2 MyOtherStruct,
 	inteM sub.MyInterface,
 	inte interface{},
 	st struct{},
 	ai alias.MyInterface,
-) (rstr1 MyStruct, rstr2 MyOtherStruct, rinteM sub.MyInterface, rinte interface{}, rst struct{}, rai alias.MyInterface) {
+) (rstr1 MyStruct, rstrPtr *MyStruct, rstrSubPtr *sub.MyStruct, rstr2 MyOtherStruct, rinteM sub.MyInterface, rinte interface{}, rst struct{}, rai alias.MyInterface) {
 
-	return rstr1, rstr2, rinteM, rinte, rst, rai
+	return rstr1, rstrPtr, rstrSubPtr, rstr2, rinteM, rinte, rst, rai
 }
 
 // CheckGetter getter
