@@ -391,9 +391,19 @@ func main() {
 					Usage: "full path to service source directory",
 				},
 				cli.StringFlag{
-					Name:  "pathToTpl",
+					Name:  "tpl",
 					Value: "",
-					Usage: "full path to integration code template",
+					Usage: "template name",
+				},
+				cli.StringFlag{
+					Name:  "org",
+					Value: "",
+					Usage: "organisation name",
+				},
+				cli.StringFlag{
+					Name:  "ver",
+					Value: "",
+					Usage: "template version",
 				},
 				cli.StringFlag{
 					Name:  "basePattern",
@@ -402,13 +412,23 @@ func main() {
 				},
 			},
 			Action: func(c *cli.Context) {
-				tplPath := c.String("pathToTpl")
+				tplName := c.String("tpl")
+				tplOrg := c.String("org")
+				tplVer := c.String("ver")
 				basePattern := c.String("basePattern")
 				if c.String("sourceDir") == "" {
 					log.Fatalf("Please provide path to service source directory")
 				}
 
-				inout.Generate(c.String("sourceDir"), tplPath, basePattern)
+				if tplName == "" {
+					log.Fatalf("Please provide template name")
+				}
+
+				if tplOrg == "" {
+					log.Fatalf("Please provide template provider organisation")
+				}
+
+				inout.Generate(c.String("sourceDir"), tplName, tplOrg, tplVer, basePattern)
 			},
 		},
 		{
@@ -428,13 +448,25 @@ func main() {
 					Usage: "full path to service container source directory",
 				},
 				cli.StringFlag{
-					Name:  "pathToTpl",
+					Name:  "tpl",
 					Value: "",
-					Usage: "full path to integration code template",
+					Usage: "template name",
+				},
+				cli.StringFlag{
+					Name:  "org",
+					Value: "",
+					Usage: "organisation name",
+				},
+				cli.StringFlag{
+					Name:  "ver",
+					Value: "",
+					Usage: "template version",
 				},
 			},
 			Action: func(c *cli.Context) {
-				tplPath := c.String("pathToTpl")
+				tplName := c.String("tpl")
+				tplOrg := c.String("org")
+				tplVer := c.String("ver")
 				if c.String("containerDir") == "" {
 					log.Fatalf("Please provide path to service container source directory")
 				}
@@ -443,9 +475,17 @@ func main() {
 					log.Fatalf("Please provide comma seperated pathes to services source directory")
 				}
 
+				if tplName == "" {
+					log.Fatalf("Please provide template name")
+				}
+
+				if tplOrg == "" {
+					log.Fatalf("Please provide template provider organisation")
+				}
+
 				pathesToServices := strings.Split(c.String("services"), ",")
 
-				routes.Generate(c.String("containerDir"), pathesToServices, tplPath)
+				routes.Generate(c.String("containerDir"), pathesToServices, tplName, tplOrg, tplVer)
 			},
 		},
 	}

@@ -40,7 +40,7 @@ type (
 	Func struct {
 		PkgPath   string
 		Name      string
-		Method    string
+		Method    []string
 		Protected bool
 		Pattern   string
 		Query     []string
@@ -81,7 +81,7 @@ func (f Func) GetOnlyPkgName() string {
 	return filepath.Base(f.PkgPath)
 }
 
-func (f Func) GetMethod() string {
+func (f Func) GetMethod() []string {
 	return f.Method
 }
 

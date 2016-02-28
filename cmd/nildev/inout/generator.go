@@ -1,7 +1,6 @@
 package inout
 
 import (
-	"fmt"
 	"go/ast"
 	"go/parser"
 	"go/token"
@@ -9,10 +8,10 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-
 	"github.com/nildev/lib/codegen"
 	"github.com/nildev/lib/log"
-	"github.com/nildev/lib/utils"
+	"github.com/nildev/tools/cmd/nildev/template"
+	"fmt"
 )
 
 type (
@@ -36,22 +35,22 @@ const (
 )
 
 // Generate required integration code
-func Generate(pathToServiceDir, tplPath, basePattern string) {
-	pathToServiceDir = utils.ResolveHome(pathToServiceDir)
-	tplData := DefaultSimpleTemplate
-
-	// If path provided read it
-	if tplPath != "" {
-		data, err := ioutil.ReadFile(tplPath)
-		tplData = string(data)
-		if err != nil {
-			log.Fatalf("Could not open template file: %s", err)
-		}
+func Generate(pathToServiceDir, tplName, tplOrg, tplVer, basePattern string) {
+	gopath := os.Getenv("GOPATH")
+	if gopath == "" {
+		log.Fatalf("GOPATH is not set")
 	}
 
-	g := makeDefaultGenerator(tplData, pathToServiceDir, basePattern)
+	rootDir := gopath + string(filepath.Separator) + "src" + string(filepath.Separator) + pathToServiceDir
+	tplLoader := template.NewGoPathLoader()
+	tplData, err := tplLoader.Load(tplOrg, tplName, tplVer)
+	if err != nil {
+		log.Fatalf("Could not load template [%s][%s][%s]", tplOrg, tplName, tplVer)
+	}
 
-	g.Generate(pathToServiceDir)
+	g := makeDefaultGenerator(string(tplData), rootDir, basePattern)
+
+	g.Generate(rootDir)
 }
 
 // Private stuff
@@ -138,6 +137,7 @@ func (dg *defaultGenerator) Generate(pathToServiceDir string) {
 		log.Fatalf("Error while iterating over directory: %s", err)
 	}
 
+	fmt.Printf("%+v", dg.vm.Funcs)
 	if err := codegen.Render(output, dg.tpl, dg.vm); err != nil {
 		log.Fatalf("Could not render code: %s", err)
 	}
@@ -155,7 +155,7 @@ func (dg *defaultGenerator) visit(path string, f os.FileInfo) error {
 }
 
 func (dg *defaultGenerator) analyseFile(pathToFile string) {
-	fmt.Printf("-- [%s] \n", pathToFile)
+	log.Infof("-- [%s] \n", pathToFile)
 	fset := token.NewFileSet()
 	fast, _ := parser.ParseFile(fset, pathToFile, nil, parser.ParseComments)
 

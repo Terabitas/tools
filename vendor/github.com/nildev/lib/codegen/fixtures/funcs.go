@@ -85,7 +85,7 @@ func CheckGetter(varOne int, xxx string, second string, mineRegex string, mineRe
 // CheckPoster post
 // All signature params will have to be included in POST body
 // Only params from @path and @query will be passed to function from path and query string
-// @method POST
+// @method POST OPTIONS
 // @path /my-path/{varOne}/{xxx}/sub-resource/{second:[a-z]+}
 // @query {mineRegex:[A-Z]+} {notOptional}
 func CheckPoster(varOne int, xxx string, second string, mineRegex string, mineRegex2 string, mineRegex26 string, notOptional string, optionalParam *string) (rez string) {

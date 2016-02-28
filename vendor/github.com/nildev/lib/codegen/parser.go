@@ -105,7 +105,7 @@ func MakeProtected(fn *ast.FuncDecl, comments map[string][]string) bool {
 	return protected
 }
 
-func MakeQuery(fn *ast.FuncDecl, comments map[string][]string, method, path string) []string {
+func MakeQuery(fn *ast.FuncDecl, comments map[string][]string, method []string, path string) []string {
 	query := []string{}
 
 	if v, ok := comments[TokenNameQuery]; ok {
@@ -127,7 +127,7 @@ func MakeQuery(fn *ast.FuncDecl, comments map[string][]string, method, path stri
 	}
 
 	// Add these only if method is GET
-	if method == MethodGET {
+	if stringInSlice(MethodGET, method) {
 		// add to query params from function signature which that has no validation rules
 		// and though are not added to @query tag
 		if fn.Type.Params != nil {
@@ -187,13 +187,20 @@ func MakePattern(fn *ast.FuncDecl, comments map[string][]string) string {
 	return path
 }
 
-func MakeMethod(fn *ast.FuncDecl, comments map[string][]string) string {
-	method := MethodGET
+func MakeMethod(fn *ast.FuncDecl, comments map[string][]string) []string {
+	method := []string{}
 
 	if v, ok := comments[TokenNameMethod]; ok {
 		if len(v) == 2 {
-			method = v[1]
+			methods := strings.Split(v[1], " ")
+			for _, m := range methods {
+				method = append(method, m)
+			}
 		}
+	}
+
+	if len(method) == 0 {
+		method = append(method, MethodGET)
 	}
 
 	return method

@@ -1,7 +1,6 @@
 package routes
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -9,6 +8,7 @@ import (
 	"github.com/nildev/lib/codegen"
 	"github.com/nildev/lib/log"
 	"github.com/nildev/lib/utils"
+	"github.com/nildev/tools/cmd/nildev/template"
 )
 
 type (
@@ -31,19 +31,20 @@ const (
 )
 
 // Generate required integration code
-func Generate(pathToServiceContainerDir string, pathToServices []string, tplPath string) {
-	tplData := DefaultTemplate
-
-	// If path provided read it
-	if tplPath != "" {
-		data, err := ioutil.ReadFile(tplPath)
-		tplData = string(data)
-		if err != nil {
-			log.Fatalf("Could not open template file: %s", err)
-		}
+func Generate(pathToServiceContainerDir string, pathToServices []string, tplName, tplOrg, tplVer string) {
+	gopath := os.Getenv("GOPATH")
+	if gopath == "" {
+		log.Fatalf("GOPATH is not set")
 	}
 
-	g := makeDefaultGenerator(tplData, pathToServiceContainerDir)
+	rootContainerDir := gopath + string(filepath.Separator) + "src" + string(filepath.Separator) + pathToServiceContainerDir
+	tplLoader := template.NewGoPathLoader()
+	tplData, err := tplLoader.Load(tplOrg, tplName, tplVer)
+	if err != nil {
+		log.Fatalf("Could not load template [%s][%s][%s]", tplOrg, tplName, tplVer)
+	}
+
+	g := makeDefaultGenerator(string(tplData), rootContainerDir)
 
 	g.Generate(pathToServices)
 }
