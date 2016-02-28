@@ -137,7 +137,6 @@ func (dg *defaultGenerator) Generate(pathToServiceDir string) {
 		log.Fatalf("Error while iterating over directory: %s", err)
 	}
 
-	fmt.Printf("%+v", dg.vm.Funcs)
 	if err := codegen.Render(output, dg.tpl, dg.vm); err != nil {
 		log.Fatalf("Could not render code: %s", err)
 	}
