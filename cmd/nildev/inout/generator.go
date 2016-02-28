@@ -11,7 +11,6 @@ import (
 	"github.com/nildev/lib/codegen"
 	"github.com/nildev/lib/log"
 	"github.com/nildev/tools/cmd/nildev/template"
-	"fmt"
 )
 
 type (
